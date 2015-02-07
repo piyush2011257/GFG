@@ -1,0 +1,52 @@
+e.g.
+	boats
+	boat
+	bats
+	bat
+	piyush
+	ram
+	raman
+
+Trie Structure
+root[26]
+
+each node
+struct trie
+{	char data;
+	bool is_word;
+	trie *child[26];
+};
+
+
+		b		p		r
+	      /   \		|		|
+	      o    a		i		a
+	      |    |		|		|
+	      a    t,1		y		m,1
+	      |    |		|		|
+	      t,1  s,1		u		a
+	      |    		|		|
+	      s,1		s		n,1
+				|		
+				h,1
+
+TST Structure
+
+				|------------------------>|
+				b		p <-------r		each level means either b or r or p -> any one match at the level !!!
+				|		|	  |
+			a <-----o		i	  a
+			|	|		|	  |
+			t,1	a		y	  m,1
+			|	|		|	  |
+			s,1	t,1		u	  a
+				|		|	  |
+				s,1		s	  n,1
+						|
+						h,1
+each node
+struct tst
+{	char data;
+	bool is_word;
+	tst *left, *right, *eq;
+};

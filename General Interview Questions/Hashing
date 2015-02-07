@@ -1,0 +1,140 @@
+http://en.wikipedia.org/wiki/Hash_table
+
+A hash table (hash map) is a data structure used to implement an associative array, a structure that can map keys to values. A hash table uses a hash function to compute an index into an array of buckets or slots, from which the correct value can be found.
+
+The idea of hashing is to distribute the entries (key/value pairs) across an array of buckets. Given a key, the algorithm computes an index that suggests where the entry can be found:
+
+index = f(key, array_size)
+
+Often this is done in two steps:
+
+hash = hashfunc(key)		
+index = hash % array_size
+
+or directly as
+index = key % array_size
+
+Choosing a good hash function
+A good hash function and implementation algorithm are essential for good hash table performance, but may be difficult to achieve.
+
+A basic requirement is that the function should provide a uniform distribution of hash values. A non-uniform distribution increases the number of collisions and the cost of resolving them. The distribution needs to be uniform only for table sizes that occur in the application. For open addressing schemes, the hash function should also avoid clustering ( both primary and secondary ), the mapping of two or more keys to consecutive slots. Such clustering may cause the lookup cost to skyrocket, even if the load factor is low and collisions are infrequent.
+In Chaining and open addressing methods, the time for lookup is low on average, but may be very large (proportional to the number of entries) for some sets of keys.
+
+Load Factor
+A critical statistic for a hash table is called the load factor. This is simply the number of entries divided by the number of buckets, that is, n/k where n is the number of entries and k is the number of buckets.
+If the load factor is kept reasonable, the hash table should perform well, provided the hashing is good. If the load factor grows too large, the hash table will become slow, or it may fail to work (depending on the method used). The expected constant time property of a hash table assumes that the load factor is kept below some bound. For a fixed number of buckets, the time for a lookup grows with the number of entries and so does not achieve the desired constant time.
+Second to that, one can examine the variance of number of entries per bucket. For example, two tables both have 1000 entries and 1000 buckets; one has exactly one entry in each bucket, the other has all entries in the same bucket. Clearly the hashing is not working in the second one.
+A low load factor is not especially beneficial. As the load factor approaches 0, the proportion of unused areas in the hash table increases, but there is not necessarily any reduction in search cost. This results in wasted memory.
+
+High and low load factor are used for dynamic hashing. Rehashing in separate chain increases the size to twice the original size or may reduce the size to half depending of load factor.
+
+Hashing
+Open Hashing
+	Separate Chaining ( with linked list )
+
+Closed Hashing
+	Linear Probe
+	Quadratic Probe
+	Double Hashing
+
+
+In another strategy, called open addressing, all entry records are stored in the bucket array itself. When a new entry has to be inserted, the buckets are examined, starting with the hashed-to slot and proceeding in some probe sequence, until an unoccupied slot is found. When searching for an entry, the buckets are scanned in the same sequence, until either the target record is found, or an unused array slot is found, which indicates that there is no such key in the table.[12] The name "open addressing" refers to the fact that the location ("address") of the item is not determined by its hash value. (This method is also called closed hashing; it should not be confused with "open hashing" or "closed addressing" that usually mean separate chaining.)
+
+Well-known probe sequences include:
+
+    Linear probing, in which the interval between probes is fixed (usually 1)
+    Quadratic probing, in which the interval between probes is increased by adding the successive outputs of a quadratic polynomial to the starting value given by the original hash computation
+    Double hashing, in which the interval between probes is computed by another hash function
+
+A drawback of all these open addressing schemes is that the number of stored entries cannot exceed the number of slots in the bucket array. In fact, even with good hash functions, their performance dramatically degrades when the load factor grows beyond 0.7 or so. For many applications, these restrictions mandate the use of dynamic resizing, with its attendant costs.
+
+Open addressing schemes also put more stringent requirements on the hash function: besides distributing the keys more uniformly over the buckets, the function must also minimize the clustering of hash values that are consecutive in the probe order. Using separate chaining, the only concern is that too many objects map to the same hash value; whether they are adjacent or nearby is completely irrelevant.
+
+Open addressing only saves memory if the entries are small (less than four times the size of a pointer) and the load factor is not too small. If the load factor is close to zero (that is, there are far more buckets than stored entries), open addressing is wasteful even if each entry is just two words.
+
+Open addressing avoids the time overhead of allocating each new entry record, and can be implemented even in the absence of a memory allocator. It also avoids the extra indirection required to access the first entry of each bucket (that is, usually the only one). It also has better locality of reference, particularly with linear probing. With small record sizes, these factors can yield better performance than chaining, particularly for lookups. Hash tables with open addressing are also easier to serialize, because they do not use pointers.
+
+On the other hand, normal open addressing is a poor choice for large elements, because these elements fill entire CPU cache lines (negating the cache advantage), and a large amount of space is wasted on large empty table slots. If the open addressing table only stores references to elements (external storage), it uses space comparable to chaining even for large records but loses its speed advantage.
+
+Generally speaking, open addressing is better used for hash tables with small records that can be stored within the table (internal storage) and fit in a cache line. They are particularly suitable for elements of one word or less. If the table is expected to have a high load factor, the records are large, or the data is variable-sized, chained hash tables often perform as well or better.
+
+http://en.wikipedia.org/wiki/Linear_probing
+
+Linear Probing
+This algorithm, which is used in open-addressed hash tables, provides good memory caching (if stepsize is equal to one), through good locality of reference, but also results in clustering, an unfortunately high probability that where there has been one collision there will be more. 
+
+Using linear probing, dictionary operation can be implemented in constant time. In other words, insert, remove and search operations can be implemented in O(1), as long as the load factor of the hash table is a constant strictly less than one. This analysis makes the (unrealistic) assumption that the hash function is completely random
+
+http://en.wikipedia.org/wiki/Quadratic_probing
+
+Quadratic Probing
+
+Limitations
+For linear probing it is a bad idea to let the hash table get nearly full, because performance is degraded as the hash table gets filled. In the case of quadratic probing, the situation is even more drastic. With the exception of the triangular number case for a power-of-two-sized hash table, there is no guarantee of finding an empty cell once the table gets more than half full, or even before the table gets half full if the table size is not prime. This is because at most half of the table can be used as alternative locations to resolve collisions. If the hash table size is b (a prime greater than 3), it can be proven that the first b / 2 alternative locations including the initial location h(k) are all distinct and unique.
+
+Algorithm to insert key in hash table
+
+ 1. Get the key k
+ 2. Set counter j = 0
+ 3. Compute hash function h[k] = k % SIZE
+ 4. If hashtable[h[k]] is empty
+         (4.1) Insert key k at hashtable[h[k]]
+         (4.2) Stop
+    Else
+        (4.3) The key space at hashtable[h[k]] is occupied, so we need to find the next available key space
+        (4.4) Increment j
+        (4.5) Compute new hash function h[k] = ( k + j * j ) % SIZE
+        (4.6) Repeat Step 4 till j is equal to the SIZE of hash table
+ 5. The hash table is full
+ 6. Stop
+
+Algorithm to search element in hash table
+
+ 1. Get the key k to be searched
+ 2. Set counter j = 0
+ 3. Compute hash function h[k] = k % SIZE
+ 4. If the key space at hashtable[h[k]] is occupied
+         (4.1) Compare the element at hashtable[h[k]] with the key k.
+         (4.2) If they are equal
+         (4.2.1) The key is found at the bucket h[k]
+         (4.2.2) Stop
+    Else
+         (4.3) The element might be placed at the next location given by the quadratic function
+         (4.4) Increment j
+         (4.5) Compute new hash function h[k] = ( k + j * j ) % SIZE
+         (4.6) Repeat Step 4 till j is greater than SIZE of hash table
+ 5. The key was not found in the hash table
+ 6. Stop
+
+Alternating sign
+
+If the sign of the offset is alternated (e.g. +1, -4, +9, -16 etc.), and if the number of buckets is a prime number p congruent to 3 modulo 4 (i.e. one of 3, 7, 11, 19, 23, 31 and so on), then the first p offsets will be unique modulo p.
+
+In other words, a permutation of 0 through p-1 is obtained, and, consequently, a free bucket will always be found as long as there exists at least one.
+
+The insertion algorithm only receives a minor modification (but do note that SIZE has to be a suitable prime number as explained above):
+
+1. Get the key k
+2. Set counter j = 0
+3. Compute hash function h[k] = k % SIZE
+4. If hashtable[h[k]] is empty
+        (4.1) Insert key k at hashtable[h[k]]
+        (4.2) Stop
+   Else
+       (4.3) The key space at hashtable[h[k]] is occupied, so we need to find the next available key space
+       (4.4) Increment j
+       (4.5) Compute new hash function h[k]. If j is odd, then
+             h[k] = ( k + j * j ) % SIZE, else h[k] = ( k - j * j ) % SIZE
+       (4.6) Repeat Step 4 till j is equal to the SIZE of hash table
+5. The hash table is full
+6. Stop
+
+
+Double Hashing
+http://en.wikipedia.org/wiki/Double_hashing
+
+Like linear probing, it uses one hash value as a starting point and then repeatedly steps forward an interval until the desired value is located, an empty location is reached, or the entire table has been searched; but this interval is decided using a second, independent hash function (hence the name double hashing). Unlike linear probing and quadratic probing, the interval depends on the data, so that even values mapping to the same location have different bucket sequences; this minimizes repeated collisions and the effects of clustering.
+
+Linear probing and, to a lesser extent, quadratic probing are able to take advantage of the data cache by accessing locations that are close together. Double hashing has, on average, larger intervals and is not able to achieve this advantage.
+
+Like all other forms of open addressing, double hashing becomes linear as the hash table approaches maximum capacity. The only solution to this is to rehash to a larger size, as with all other open addressing schemes.
